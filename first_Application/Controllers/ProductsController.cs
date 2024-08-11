@@ -1,8 +1,11 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using first_Application.Models;
 using first_Application.Data;
 using Microsoft.AspNetCore.JsonPatch;
+
+using Entities.Models;
+using Repositories.EFCore;
+using Repositories.Contracts;
 
 namespace first_Application.Controllers
 {
@@ -10,30 +13,44 @@ namespace first_Application.Controllers
     [ApiController]
     public class ProductsController : ControllerBase
     {
-        private readonly ILogger<ProductsController> _logger;
+        private readonly IRepositoryManager _manager;
 
-        public ProductsController(ILogger<ProductsController> logger)
+        public ProductsController(IRepositoryManager manager)
         {
-            _logger = logger;
+            _manager = manager;
         }
 
         [HttpGet]
         public IActionResult GetAllProducts()
         {
-            var products = ApplicationContext.Products;
-            return Ok(products);
+            try
+            {
+                var products = _manager.Product.FindAll(false);
+                return Ok(products);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+
         }
 
         [HttpGet("{id:int}")]
         public IActionResult GetOneProduct([FromRoute(Name = "id")] int id)
         {
-            var product = ApplicationContext.Products.Where(p => p.Id.Equals(id)).FirstOrDefault();
-            if (product is null)
+            try
             {
-                return NotFound();
+                var entity =_manager.Product.GetOneProductById(id,false);
+                if (entity is null)
+                {
+                    return NotFound();//404
+                }
+                return Ok(entity);
             }
-            return Ok(product);
-
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
         }
 
         [HttpPost]
@@ -45,66 +62,86 @@ namespace first_Application.Controllers
                 {
                     return BadRequest();
                 }
-                ApplicationContext.Products.Add(product);
+                _manager.Product.CreateOneProduct(product);
+                _manager.Save();
                 return StatusCode(201, product);
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                throw new Exception(ex.Message, ex);
             }
         }
 
         [HttpPut("{id:int}")]
         public IActionResult UpdateOneProduct([FromRoute(Name = "id")] int id, [FromBody] Product product)
         {
-            var entity = ApplicationContext.Products.Find(p => p.Id.Equals(product.Id));
-            if (entity is null)
+            try
             {
-                return NotFound(); //404
+                var entity = _manager.Product.GetOneProductById(id,false);
+                if (entity is null)
+                {
+                    return NotFound();
+                }
+                if (entity.Id != id)
+                {
+                    return BadRequest();
+                }
+                entity.ProductName = product.ProductName;
+                entity.Price = product.Price;
+                _manager.Save();
+                return Ok(entity);
             }
-            if (id != entity.Id)
+            catch (Exception ex)
             {
-                return BadRequest(); //400
+                throw new Exception(ex.Message);
             }
-            ApplicationContext.Products.Remove(entity);
-            product.Id = entity.Id;
-            ApplicationContext.Products.Add(product);
-            return Ok(product);
-
-        }
-
-        [HttpDelete]
-        public IActionResult DeleteAllProducts()
-        {
-            ApplicationContext.Products.Clear();
-            return NoContent(); //204
         }
 
         [HttpDelete("{id:int}")]
         public IActionResult DeleteOneProduct([FromRoute(Name = "id")] int id)
         {
-            var entity = ApplicationContext.Products.Find(p => p.Id.Equals(id));
-            if (entity is null)
+            try
             {
-                return NotFound(new
+                var entity = _manager.Product.GetOneProductById(id, false);
+                if (entity is null)
                 {
-                    StatusCode = 404,
-                    Message = $"Product with {id} id is not found"
-                });
+                    return NotFound(new
+                    {
+                        StatusCode = 404,
+                        Message = $"Product with {id} id is not found"
+                    });
+                }
+                _manager.Product.DeleteOneProduct(entity);
+                _manager.Save();
+
+                return NoContent();
+
             }
-            ApplicationContext.Products.Remove(entity);
-            return NoContent();
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
         }
 
         [HttpPatch("{id:int}")]
-        public IActionResult PartiallyUpdateOneProduct([FromRoute(Name="id")]int id,[FromBody] JsonPatchDocument<Product> pathProduct)
+        public IActionResult PartiallyUpdateOneProduct([FromRoute(Name = "id")] int id, [FromBody] JsonPatchDocument<Product> pathProduct)
         {
-            var entity = ApplicationContext.Products.Find(p => p.Id.Equals(id));
-            if(entity is null){
-                return NotFound();
+            try
+            {
+                var entity = _manager.Product.GetOneProductById(id, false);
+                if (entity is null)
+                {
+                    return NotFound();
+                }
+                pathProduct.ApplyTo(entity);
+                _manager.Product.Update(entity);
+                _manager.Save();
+                return NoContent();
             }
-            pathProduct.ApplyTo(entity);
-            return NoContent();
+            catch(Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
         }
     }
 }

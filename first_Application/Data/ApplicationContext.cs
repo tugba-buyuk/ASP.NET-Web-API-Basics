@@ -1,4 +1,4 @@
-﻿using first_Application.Models;
+﻿using Entities.Models;
 
 namespace first_Application.Data
 {
