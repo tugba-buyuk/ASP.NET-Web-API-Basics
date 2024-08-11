@@ -1,21 +1,22 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using first_Application.Data;
+﻿using Entities.Models;
 using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.Mvc;
+using Services.Contracts;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-using Entities.Models;
-using Repositories.EFCore;
-using Repositories.Contracts;
-
-namespace first_Application.Controllers
+namespace Presentation.Controllers
 {
     [Route("api/products")]
     [ApiController]
     public class ProductsController : ControllerBase
     {
-        private readonly IRepositoryManager _manager;
+        private readonly IServiceManager _manager;
 
-        public ProductsController(IRepositoryManager manager)
+        public ProductsController(IServiceManager manager)
         {
             _manager = manager;
         }
@@ -25,7 +26,7 @@ namespace first_Application.Controllers
         {
             try
             {
-                var products = _manager.Product.FindAll(false);
+                var products = _manager.ProductService.AllProducts(false);
                 return Ok(products);
             }
             catch (Exception ex)
@@ -40,7 +41,7 @@ namespace first_Application.Controllers
         {
             try
             {
-                var entity =_manager.Product.GetOneProductById(id,false);
+                var entity = _manager.ProductService.OneProductwithID(id, false);
                 if (entity is null)
                 {
                     return NotFound();//404
@@ -62,8 +63,7 @@ namespace first_Application.Controllers
                 {
                     return BadRequest();
                 }
-                _manager.Product.CreateOneProduct(product);
-                _manager.Save();
+                _manager.ProductService.CreateProduct(product);
                 return StatusCode(201, product);
             }
             catch (Exception ex)
@@ -77,19 +77,14 @@ namespace first_Application.Controllers
         {
             try
             {
-                var entity = _manager.Product.GetOneProductById(id,false);
-                if (entity is null)
-                {
-                    return NotFound();
-                }
-                if (entity.Id != id)
+                if (product is null)
                 {
                     return BadRequest();
                 }
-                entity.ProductName = product.ProductName;
-                entity.Price = product.Price;
-                _manager.Save();
-                return Ok(entity);
+
+                _manager.ProductService.UpdateProduct(id, product, true);
+                return NoContent();
+
             }
             catch (Exception ex)
             {
@@ -102,18 +97,7 @@ namespace first_Application.Controllers
         {
             try
             {
-                var entity = _manager.Product.GetOneProductById(id, false);
-                if (entity is null)
-                {
-                    return NotFound(new
-                    {
-                        StatusCode = 404,
-                        Message = $"Product with {id} id is not found"
-                    });
-                }
-                _manager.Product.DeleteOneProduct(entity);
-                _manager.Save();
-
+                _manager.ProductService.DeleteProduct(id, false);
                 return NoContent();
 
             }
@@ -128,17 +112,16 @@ namespace first_Application.Controllers
         {
             try
             {
-                var entity = _manager.Product.GetOneProductById(id, false);
+                var entity = _manager.ProductService.OneProductwithID(id, true);
                 if (entity is null)
                 {
                     return NotFound();
                 }
                 pathProduct.ApplyTo(entity);
-                _manager.Product.Update(entity);
-                _manager.Save();
+                _manager.ProductService.UpdateProduct(id, entity, true);
                 return NoContent();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw new Exception(ex.Message);
             }
