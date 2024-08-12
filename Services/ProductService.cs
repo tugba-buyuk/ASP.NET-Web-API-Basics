@@ -12,10 +12,11 @@ namespace Services
     public class ProductService : IProductService
     {
         private readonly IRepositoryManager _manager;
-
-        public ProductService(IRepositoryManager manager)
+        private readonly ILoggerService _logger;
+        public ProductService(IRepositoryManager manager, ILoggerService logger)
         {
             _manager = manager;
+            _logger = logger;
         }
 
         public IEnumerable<Product> AllProducts(bool trackChanges)
@@ -25,10 +26,6 @@ namespace Services
 
         public void CreateProduct(Product product)
         {
-            if(product is null)
-            {
-                throw new ArgumentNullException(nameof(product));
-            }
             _manager.Product.CreateOneProduct(product);
             _manager.Save();
 
@@ -39,7 +36,9 @@ namespace Services
             var product=_manager.Product.GetOneProductById(id, trackChanges);
             if(product is null)
             {
-                throw new Exception($"Product with {id} id is not found");
+                string message = $"Product with {id} id is not found";
+                _logger.LogInfo(message);
+                throw new Exception(message);
             }
             _manager.Product.DeleteOneProduct(product);
             _manager.Save();
@@ -50,7 +49,9 @@ namespace Services
             var entity = _manager.Product.GetOneProductById(id,trackChanges);
             if(entity is null)
             {
-                throw new Exception($"Product with {id} is not found");
+                string message = $"Product with {id} id is not found";
+                _logger.LogInfo(message);
+                throw new Exception(message);
             }
             return entity;
         }
@@ -60,7 +61,9 @@ namespace Services
             var entity = _manager.Product.GetOneProductById(id, trackChanges);
             if(entity is null)
             {
-                throw new Exception($"Product with {id} id is not found");
+                string message = $"Product with {id} id is not found";
+                _logger.LogInfo(message);
+                throw new Exception(message);
             }
             entity.ProductName = product.ProductName;
             entity.Price = product.Price;

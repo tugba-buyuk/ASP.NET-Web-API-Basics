@@ -12,9 +12,9 @@ namespace Services
     public class ServiceManager : IServiceManager
     {
         private readonly Lazy<ProductService> _productService;
-        public ServiceManager(IRepositoryManager manager)
+        public ServiceManager(IRepositoryManager manager,ILoggerService logger)
         {
-            _productService=new Lazy<ProductService>(() => new ProductService(manager));
+            _productService=new Lazy<ProductService>(() => new ProductService(manager,logger));
         }
         public IProductService ProductService => _productService.Value;
     }

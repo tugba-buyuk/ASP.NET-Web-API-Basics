@@ -18,5 +18,8 @@ namespace first_Application.Extensions
 
         public static void ConfigureServiceManager(this IServiceCollection services) =>
             services.AddScoped<IServiceManager, ServiceManager>();
+
+        public static void ConfigureLoggerManager(this IServiceCollection services) =>
+            services.AddSingleton<ILoggerService, LoggerManager>();
     }
 }
