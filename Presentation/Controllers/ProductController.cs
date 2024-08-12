@@ -1,4 +1,5 @@
-﻿using Entities.Models;
+﻿using Entities.Exceptions;
+using Entities.Models;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Services.Contracts;
@@ -24,107 +25,70 @@ namespace Presentation.Controllers
         [HttpGet]
         public IActionResult GetAllProducts()
         {
-            try
-            {
-                var products = _manager.ProductService.AllProducts(false);
-                return Ok(products);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
+
+            var products = _manager.ProductService.AllProducts(false);
+            return Ok(products);
+
 
         }
 
         [HttpGet("{id:int}")]
         public IActionResult GetOneProduct([FromRoute(Name = "id")] int id)
         {
-            try
-            {
-                var entity = _manager.ProductService.OneProductwithID(id, false);
-                if (entity is null)
-                {
-                    return NotFound();//404
-                }
-                return Ok(entity);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
+
+            var entity = _manager.ProductService.OneProductwithID(id, false);
+            return Ok(entity);
+
         }
 
         [HttpPost]
         public IActionResult CreateOneProduct([FromBody] Product product)
         {
-            try
+
+            if (product is null)
             {
-                if (product is null)
-                {
-                    return BadRequest();
-                }
-                _manager.ProductService.CreateProduct(product);
-                return StatusCode(201, product);
+                return BadRequest();
             }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message, ex);
-            }
+            _manager.ProductService.CreateProduct(product);
+            return StatusCode(201, product);
+
         }
 
         [HttpPut("{id:int}")]
         public IActionResult UpdateOneProduct([FromRoute(Name = "id")] int id, [FromBody] Product product)
         {
-            try
-            {
-                if (product is null)
-                {
-                    return BadRequest();
-                }
 
-                _manager.ProductService.UpdateProduct(id, product, true);
-                return NoContent();
-
-            }
-            catch (Exception ex)
+            if (product is null)
             {
-                throw new Exception(ex.Message);
+                return BadRequest();
             }
+
+            _manager.ProductService.UpdateProduct(id, product, true);
+            return NoContent();
         }
 
         [HttpDelete("{id:int}")]
         public IActionResult DeleteOneProduct([FromRoute(Name = "id")] int id)
         {
-            try
-            {
-                _manager.ProductService.DeleteProduct(id, false);
-                return NoContent();
 
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
+            _manager.ProductService.DeleteProduct(id, false);
+            return NoContent();
+
         }
 
         [HttpPatch("{id:int}")]
         public IActionResult PartiallyUpdateOneProduct([FromRoute(Name = "id")] int id, [FromBody] JsonPatchDocument<Product> pathProduct)
         {
-            try
+
+            var entity = _manager.ProductService.OneProductwithID(id, true);
+            if (entity is null)
             {
-                var entity = _manager.ProductService.OneProductwithID(id, true);
-                if (entity is null)
-                {
-                    return NotFound();
-                }
-                pathProduct.ApplyTo(entity);
-                _manager.ProductService.UpdateProduct(id, entity, true);
-                return NoContent();
+                throw new ProductNotFoundException(id);
             }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
+            pathProduct.ApplyTo(entity);
+            _manager.ProductService.UpdateProduct(id, entity, true);
+            return NoContent();
+
         }
     }
 }

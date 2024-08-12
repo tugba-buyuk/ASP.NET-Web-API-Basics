@@ -1,7 +1,9 @@
 using first_Application.Extensions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 using NLog;
 using Repositories.EFCore;
+using Services.Contracts;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,11 +22,17 @@ builder.Services.ConfigureServiceManager();
 builder.Services.ConfigureLoggerManager();
 var app = builder.Build();
 
+var logger= app.Services.GetRequiredService<ILoggerService>();
+app.ConfigureExceptionHandler(logger);
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+}
+if (app.Environment.IsProduction())
+{
+    app.UseHsts();
 }
 
 app.UseHttpsRedirection();

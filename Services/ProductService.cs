@@ -1,4 +1,5 @@
-﻿using Entities.Models;
+﻿using Entities.Exceptions;
+using Entities.Models;
 using Repositories.Contracts;
 using Services.Contracts;
 using System;
@@ -36,9 +37,7 @@ namespace Services
             var product=_manager.Product.GetOneProductById(id, trackChanges);
             if(product is null)
             {
-                string message = $"Product with {id} id is not found";
-                _logger.LogInfo(message);
-                throw new Exception(message);
+                throw new ProductNotFoundException(id);
             }
             _manager.Product.DeleteOneProduct(product);
             _manager.Save();
@@ -49,9 +48,7 @@ namespace Services
             var entity = _manager.Product.GetOneProductById(id,trackChanges);
             if(entity is null)
             {
-                string message = $"Product with {id} id is not found";
-                _logger.LogInfo(message);
-                throw new Exception(message);
+                throw new ProductNotFoundException(id);
             }
             return entity;
         }
@@ -61,9 +58,7 @@ namespace Services
             var entity = _manager.Product.GetOneProductById(id, trackChanges);
             if(entity is null)
             {
-                string message = $"Product with {id} id is not found";
-                _logger.LogInfo(message);
-                throw new Exception(message);
+                throw new ProductNotFoundException(id);
             }
             entity.ProductName = product.ProductName;
             entity.Price = product.Price;
