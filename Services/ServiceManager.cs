@@ -1,4 +1,5 @@
-﻿using Repositories.Contracts;
+﻿using AutoMapper;
+using Repositories.Contracts;
 using Repositories.EFCore;
 using Services.Contracts;
 using System;
@@ -12,9 +13,9 @@ namespace Services
     public class ServiceManager : IServiceManager
     {
         private readonly Lazy<ProductService> _productService;
-        public ServiceManager(IRepositoryManager manager,ILoggerService logger)
+        public ServiceManager(IRepositoryManager manager,ILoggerService logger,IMapper mapper)
         {
-            _productService=new Lazy<ProductService>(() => new ProductService(manager,logger));
+            _productService=new Lazy<ProductService>(() => new ProductService(manager,logger,mapper));
         }
         public IProductService ProductService => _productService.Value;
     }

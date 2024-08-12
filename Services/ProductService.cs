@@ -1,4 +1,6 @@
-﻿using Entities.Exceptions;
+﻿using AutoMapper;
+using Entities.DataTransferObjects;
+using Entities.Exceptions;
 using Entities.Models;
 using Repositories.Contracts;
 using Services.Contracts;
@@ -7,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Reflection.Metadata.BlobBuilder;
 
 namespace Services
 {
@@ -14,15 +17,19 @@ namespace Services
     {
         private readonly IRepositoryManager _manager;
         private readonly ILoggerService _logger;
-        public ProductService(IRepositoryManager manager, ILoggerService logger)
+        private readonly IMapper _mapper;
+        public ProductService(IRepositoryManager manager, ILoggerService logger, IMapper mapper)
         {
             _manager = manager;
             _logger = logger;
+            _mapper = mapper;
         }
 
-        public IEnumerable<Product> AllProducts(bool trackChanges)
+        public IEnumerable<ProductDTO> AllProducts(bool trackChanges)
         {
-            return _manager.Product.GetAllProducts(trackChanges);
+            var products= _manager.Product.GetAllProducts(trackChanges);
+            return _mapper.Map<IEnumerable<ProductDTO>>(products);
+
         }
 
         public void CreateProduct(Product product)
@@ -53,16 +60,16 @@ namespace Services
             return entity;
         }
 
-        public void UpdateProduct(int id, Product product, bool trackChanges)
+        public void UpdateProduct(int id, ProductDTOForUpdate productDto, bool trackChanges)
         {
             var entity = _manager.Product.GetOneProductById(id, trackChanges);
             if(entity is null)
             {
                 throw new ProductNotFoundException(id);
             }
-            entity.ProductName = product.ProductName;
-            entity.Price = product.Price;
-            _manager.Product.UpdateOneProduct(entity);
+            var product= _mapper.Map<Product>(productDto);
+
+            _manager.Product.UpdateOneProduct(product);
             _manager.Save();
         }
     }
