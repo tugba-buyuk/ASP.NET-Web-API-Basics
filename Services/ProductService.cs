@@ -25,44 +25,62 @@ namespace Services
             _mapper = mapper;
         }
 
-        public IEnumerable<ProductDTO> AllProducts(bool trackChanges)
+        public async Task<IEnumerable<ProductDTO>> AllProductsAsync(bool trackChanges)
         {
-            var products= _manager.Product.GetAllProducts(trackChanges);
+            var products= await _manager.Product.GetAllProductsAsync(trackChanges);
             return _mapper.Map<IEnumerable<ProductDTO>>(products);
 
         }
 
-        public void CreateProduct(Product product)
+        public async Task<ProductDTO>CreateProductAsync(ProductDTOForInsertion productDto)
         {
-            _manager.Product.CreateOneProduct(product);
-            _manager.Save();
-
+            var entity = _mapper.Map<Product>(productDto);
+            _manager.Product.CreateOneProduct(entity);
+            await _manager.SaveAsync();
+            return _mapper.Map<ProductDTO>(entity);
         }
 
-        public void DeleteProduct(int id, bool trackChanges)
+        public async Task DeleteProductAsync(int id, bool trackChanges)
         {
-            var product=_manager.Product.GetOneProductById(id, trackChanges);
+            var product=await _manager.Product.GetOneProductByIdAsync(id, trackChanges);
             if(product is null)
             {
                 throw new ProductNotFoundException(id);
             }
             _manager.Product.DeleteOneProduct(product);
-            _manager.Save();
+            await _manager.SaveAsync();
         }
 
-        public Product OneProductwithID(int id, bool trackChanges)
+        public async Task<(ProductDTOForUpdate productDto, Product product)> GetOneProductForPatchAsync(int id, bool trackChanges)
         {
-            var entity = _manager.Product.GetOneProductById(id,trackChanges);
+            var product= await _manager.Product.GetOneProductByIdAsync(id,trackChanges);
+            if(product is null)
+            {
+                throw new ProductNotFoundException(id);
+            }
+            var productDtoForUpdate= _mapper.Map<ProductDTOForUpdate>(product);
+            return (productDtoForUpdate, product);
+        }
+
+        public async Task<ProductDTO> OneProductwithIDAsync(int id, bool trackChanges)
+        {
+            var entity = await _manager.Product.GetOneProductByIdAsync(id,trackChanges);
             if(entity is null)
             {
                 throw new ProductNotFoundException(id);
             }
-            return entity;
+            return _mapper.Map<ProductDTO>(entity);
         }
 
-        public void UpdateProduct(int id, ProductDTOForUpdate productDto, bool trackChanges)
+        public async Task SaveChangesForPatchAsync(ProductDTOForUpdate productDto, Product product)
         {
-            var entity = _manager.Product.GetOneProductById(id, trackChanges);
+            _mapper.Map(productDto, product);
+            await _manager.SaveAsync();
+        }
+
+        public async Task UpdateProductAsync(int id, ProductDTOForUpdate productDto, bool trackChanges)
+        {
+            var entity = await _manager.Product.GetOneProductByIdAsync(id, trackChanges);
             if(entity is null)
             {
                 throw new ProductNotFoundException(id);
@@ -70,7 +88,7 @@ namespace Services
             var product= _mapper.Map<Product>(productDto);
 
             _manager.Product.UpdateOneProduct(product);
-            _manager.Save();
+           await  _manager.SaveAsync();
         }
     }
 }

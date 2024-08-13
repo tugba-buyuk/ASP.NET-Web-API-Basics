@@ -1,4 +1,5 @@
 using first_Application.Extensions;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using NLog;
@@ -13,13 +14,17 @@ LogManager.LoadConfiguration(String.Concat(Directory.GetCurrentDirectory(),"/nlo
 builder.Services.AddControllers(config =>
 {
     config.RespectBrowserAcceptHeader = true; //header'daki accept'e farklý formatlarý kabul edeceðini söyler.
-    config.ReturnHttpNotAcceptable=true; //eðer ilgili yapýlandýrma yoksa 406 döner
+    config.ReturnHttpNotAcceptable = true; //eðer ilgili yapýlandýrma yoksa 406 döner
 })
     .AddCustomCsvFormatter()
     .AddXmlDataContractSerializerFormatters() // xml dönüþü yapmamýzý saðlayan kod
     .AddApplicationPart(typeof(Presentation.AssemblyReference).Assembly)
     .AddNewtonsoftJson();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.Configure<ApiBehaviorOptions>(options =>
+{
+    options.SuppressModelStateInvalidFilter = true;
+});
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.ConfigureSqlContext(builder.Configuration);

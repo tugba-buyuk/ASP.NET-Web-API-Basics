@@ -24,70 +24,85 @@ namespace Presentation.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetAllProducts()
+        public async Task<IActionResult> GetAllProductsAsync()
         {
 
-            var products = _manager.ProductService.AllProducts(false);
+            var products = await _manager.ProductService.AllProductsAsync(false);
             return Ok(products);
 
 
         }
 
         [HttpGet("{id:int}")]
-        public IActionResult GetOneProduct([FromRoute(Name = "id")] int id)
+        public async Task<IActionResult> GetOneProductAsync([FromRoute(Name = "id")] int id)
         {
 
-            var entity = _manager.ProductService.OneProductwithID(id, false);
+            var entity =await _manager.ProductService.OneProductwithIDAsync(id, false);
             return Ok(entity);
 
         }
 
         [HttpPost]
-        public IActionResult CreateOneProduct([FromBody] Product product)
-        {
-
-            if (product is null)
-            {
-                return BadRequest();
-            }
-            _manager.ProductService.CreateProduct(product);
-            return StatusCode(201, product);
-
-        }
-
-        [HttpPut("{id:int}")]
-        public IActionResult UpdateOneProduct([FromRoute(Name = "id")] int id, [FromBody] ProductDTOForUpdate productDto)
+        public async Task<IActionResult> CreateOneProductAsync([FromBody] ProductDTOForInsertion productDto)
         {
 
             if (productDto is null)
             {
                 return BadRequest();
             }
+            if(!ModelState.IsValid)
+            {
+                return UnprocessableEntity(ModelState);
+            }
+            await _manager.ProductService.CreateProductAsync(productDto);
+            return StatusCode(201, productDto);
 
-            _manager.ProductService.UpdateProduct(id, productDto, true);
+        }
+
+        [HttpPut("{id:int}")]
+        public async Task<IActionResult> UpdateOneProductAsync([FromRoute(Name = "id")] int id, [FromBody] ProductDTOForUpdate productDto)
+        {
+
+            if (productDto is null)
+            {
+                return BadRequest();
+            }
+            if (!ModelState.IsValid)
+            {
+                return UnprocessableEntity(ModelState);
+            }
+
+            await _manager.ProductService.UpdateProductAsync(id, productDto, true);
             return NoContent();
         }
 
         [HttpDelete("{id:int}")]
-        public IActionResult DeleteOneProduct([FromRoute(Name = "id")] int id)
+        public async Task<IActionResult> DeleteOneProductAsync([FromRoute(Name = "id")] int id)
         {
 
-            _manager.ProductService.DeleteProduct(id, false);
+            await _manager.ProductService.DeleteProductAsync(id, false);
             return NoContent();
 
         }
 
         [HttpPatch("{id:int}")]
-        public IActionResult PartiallyUpdateOneProduct([FromRoute(Name = "id")] int id, [FromBody] JsonPatchDocument<Product> pathProduct)
+        public async Task<IActionResult> PartiallyUpdateOneProductAsync([FromRoute(Name = "id")] int id, [FromBody] JsonPatchDocument<ProductDTOForUpdate> pathProduct)
         {
-
-            var entity = _manager.ProductService.OneProductwithID(id, true);
-            if (entity is null)
+           if(pathProduct is null)
             {
-                throw new ProductNotFoundException(id);
+                return BadRequest();
             }
-            pathProduct.ApplyTo(entity);
-            _manager.ProductService.UpdateProduct(id, new ProductDTOForUpdate(entity.Id,entity.ProductName,entity.Price), true);
+            var result =await  _manager.ProductService.GetOneProductForPatchAsync(id, false);
+            pathProduct.ApplyTo(result.productDto, ModelState);
+
+            TryValidateModel(result.productDto);
+            if(!ModelState.IsValid)
+            {
+                return UnprocessableEntity(ModelState);
+            }
+
+            await _manager.ProductService.SaveChangesForPatchAsync(result.productDto, result.product);
+
             return NoContent();
 
         }

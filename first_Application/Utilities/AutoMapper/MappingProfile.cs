@@ -8,8 +8,10 @@ namespace first_Application.Utilities.AutoMapper
     {
         public MappingProfile() 
         {
-            CreateMap<ProductDTOForUpdate, Product>();
+            CreateMap<ProductDTOForUpdate, Product>().ReverseMap();
             CreateMap<Product, ProductDTO>();
+            CreateMap<ProductDTOForInsertion, Product>();
+
         }
 
     }

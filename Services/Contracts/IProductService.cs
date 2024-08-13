@@ -11,11 +11,13 @@ namespace Services.Contracts
 {
     public interface IProductService
     {
-        IEnumerable<ProductDTO> AllProducts(bool trackChanges);
-        Product OneProductwithID(int id, bool trackChanges);
-        void CreateProduct(Product product);
-        void UpdateProduct(int id, ProductDTOForUpdate productDto, bool trackChanges);
-        void DeleteProduct(int id,bool trackChanges);
+        Task<IEnumerable<ProductDTO>> AllProductsAsync(bool trackChanges);
+        Task<ProductDTO> OneProductwithIDAsync(int id, bool trackChanges);
+        Task<ProductDTO> CreateProductAsync(ProductDTOForInsertion productDto);
+        Task UpdateProductAsync(int id, ProductDTOForUpdate productDto, bool trackChanges);
+        Task DeleteProductAsync(int id,bool trackChanges);
+        Task<(ProductDTOForUpdate productDto, Product product)> GetOneProductForPatchAsync(int id , bool  trackChanges);
+        Task SaveChangesForPatchAsync(ProductDTOForUpdate productDto, Product product);
 
     }
 }
