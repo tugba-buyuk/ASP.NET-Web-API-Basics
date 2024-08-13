@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using NLog;
+using Presentation.ActionFilters;
 using Repositories.EFCore;
 using Services.Contracts;
 
@@ -20,6 +21,9 @@ builder.Services.AddControllers(config =>
     .AddXmlDataContractSerializerFormatters() // xml dönüþü yapmamýzý saðlayan kod
     .AddApplicationPart(typeof(Presentation.AssemblyReference).Assembly)
     .AddNewtonsoftJson();
+
+
+
 builder.Services.Configure<ApiBehaviorOptions>(options =>
 {
     options.SuppressModelStateInvalidFilter = true;
@@ -31,6 +35,7 @@ builder.Services.ConfigureSqlContext(builder.Configuration);
 builder.Services.ConfigureRepositoryManager();
 builder.Services.ConfigureServiceManager();
 builder.Services.ConfigureLoggerManager();
+builder.Services.ConfigureActionFilters();
 builder.Services.AddAutoMapper(typeof(Program));
 var app = builder.Build();
 
