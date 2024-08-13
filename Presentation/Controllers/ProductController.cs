@@ -1,6 +1,7 @@
 ﻿using Entities.DataTransferObjects;
 using Entities.Exceptions;
 using Entities.Models;
+using Entities.RequestFeatures;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.ActionFilters;
@@ -9,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Presentation.Controllers
@@ -26,11 +28,12 @@ namespace Presentation.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllProductsAsync()
+        public async Task<IActionResult> GetAllProductsAsync([FromQuery] ProductParameters productParameters)
         {
 
-            var products = await _manager.ProductService.AllProductsAsync(false);
-            return Ok(products);
+            var pagedResult = await _manager.ProductService.AllProductsAsync(productParameters,false);
+            Response.Headers.Add("X-Pagination",JsonSerializer.Serialize(pagedResult.metaData));
+            return Ok(pagedResult.productDto);
 
 
         }

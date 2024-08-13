@@ -2,6 +2,7 @@
 using Entities.DataTransferObjects;
 using Entities.Exceptions;
 using Entities.Models;
+using Entities.RequestFeatures;
 using Repositories.Contracts;
 using Services.Contracts;
 using System;
@@ -25,11 +26,11 @@ namespace Services
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<ProductDTO>> AllProductsAsync(bool trackChanges)
+        public async Task<(IEnumerable<ProductDTO> productDto, MetaData metaData)> AllProductsAsync(ProductParameters productParameters, bool trackChanges)
         {
-            var products= await _manager.Product.GetAllProductsAsync(trackChanges);
-            return _mapper.Map<IEnumerable<ProductDTO>>(products);
-
+            var productsWithMetaData= await _manager.Product.GetAllProductsAsync(productParameters, trackChanges);
+            var productDto=  _mapper.Map<IEnumerable<ProductDTO>>(productsWithMetaData);
+            return (productDto, productsWithMetaData.MetaData);
         }
 
         public async Task<ProductDTO>CreateProductAsync(ProductDTOForInsertion productDto)

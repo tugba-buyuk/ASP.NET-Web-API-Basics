@@ -1,4 +1,5 @@
 ﻿using Entities.Models;
+using Entities.RequestFeatures;
 using Microsoft.EntityFrameworkCore;
 using Repositories.Contracts;
 using System;
@@ -21,12 +22,22 @@ namespace Repositories.EFCore
         public void DeleteOneProduct(Product product) =>Delete(product);
 
 
-        public async Task<IEnumerable<Product>> GetAllProductsAsync(bool trackChanges)=>
-            await FindAll(trackChanges).ToListAsync();
+        public async Task<PagedList<Product>> GetAllProductsAsync(ProductParameters productParameters ,bool trackChanges)
+        {
+            var products= await FindAll(trackChanges).ToListAsync();
 
+            return PagedList<Product>
+                .ToPagedList(products, 
+                productParameters.pageNumber, 
+                productParameters.PageSize);
 
+        }
+            
         public async Task<Product> GetOneProductByIdAsync(int id, bool trackChanges) => 
-            await FindByCondition((p => p.Id.Equals(id)),trackChanges).SingleOrDefaultAsync();
+            await FindByCondition
+            ((p => p.Id.Equals(id))
+                ,trackChanges)
+            .SingleOrDefaultAsync();
 
         public void UpdateOneProduct(Product product)=>Update(product);
 
