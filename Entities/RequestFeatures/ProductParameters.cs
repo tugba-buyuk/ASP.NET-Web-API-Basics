@@ -8,5 +8,8 @@ namespace Entities.RequestFeatures
 {
     public class ProductParameters : RequestParameters
     {
+        public uint MinPrice { get; set; }
+        public uint MaxPrice { get; set; } = 100000;
+        public bool ValidPriceRange => MaxPrice > MinPrice;
     }
 }

@@ -28,6 +28,10 @@ namespace Services
 
         public async Task<(IEnumerable<ProductDTO> productDto, MetaData metaData)> AllProductsAsync(ProductParameters productParameters, bool trackChanges)
         {
+            if (!productParameters.ValidPriceRange)
+            {
+                throw new PriceOutofRangeBadRequestException();
+            }
             var productsWithMetaData= await _manager.Product.GetAllProductsAsync(productParameters, trackChanges);
             var productDto=  _mapper.Map<IEnumerable<ProductDTO>>(productsWithMetaData);
             return (productDto, productsWithMetaData.MetaData);

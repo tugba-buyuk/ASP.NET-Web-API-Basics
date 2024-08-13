@@ -24,7 +24,10 @@ namespace Repositories.EFCore
 
         public async Task<PagedList<Product>> GetAllProductsAsync(ProductParameters productParameters ,bool trackChanges)
         {
-            var products= await FindAll(trackChanges).ToListAsync();
+            var products = await FindAll(trackChanges)
+                .FilterProducts(productParameters.MinPrice,productParameters.MaxPrice)
+                .OrderBy(p=>p.Id)
+                .ToListAsync();
 
             return PagedList<Product>
                 .ToPagedList(products, 
