@@ -1,4 +1,5 @@
 ﻿using Entities.DataTransferObjects;
+using Entities.LinkModels;
 using Entities.Models;
 using Entities.RequestFeatures;
 using Repositories.Contracts;
@@ -13,7 +14,7 @@ namespace Services.Contracts
 {
     public interface IProductService
     {
-        Task<(IEnumerable<ExpandoObject> productDto,MetaData metaData)> AllProductsAsync(ProductParameters productParameters,bool trackChanges);
+        Task<(LinkResponse linkResponse, MetaData metaData)> AllProductsAsync(LinkParameters linkParameters, bool trackChanges);
         Task<ProductDTO> OneProductwithIDAsync(int id, bool trackChanges);
         Task<ProductDTO> CreateProductAsync(ProductDTOForInsertion productDto);
         Task UpdateProductAsync(int id, ProductDTOForUpdate productDto, bool trackChanges);

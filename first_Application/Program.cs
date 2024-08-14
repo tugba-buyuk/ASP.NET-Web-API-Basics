@@ -5,6 +5,7 @@ using Microsoft.Extensions.Hosting;
 using NLog;
 using Presentation.ActionFilters;
 using Repositories.EFCore;
+using Services;
 using Services.Contracts;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -39,6 +40,8 @@ builder.Services.ConfigureActionFilters();
 builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.ConfigureCors();
 builder.Services.ConfigureDataShaper();
+builder.Services.AddCustomMediaTypes();
+builder.Services.AddScoped<IProductLinks, ProductLinks>();
 var app = builder.Build();
 
 var logger= app.Services.GetRequiredService<ILoggerService>();

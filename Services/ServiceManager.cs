@@ -14,9 +14,9 @@ namespace Services
     public class ServiceManager : IServiceManager
     {
         private readonly Lazy<ProductService> _productService;
-        public ServiceManager(IRepositoryManager manager,ILoggerService logger,IMapper mapper,IDataShaper<ProductDTO> shaper)
+        public ServiceManager(IRepositoryManager manager,ILoggerService logger,IMapper mapper, IProductLinks productLinks)
         {
-            _productService=new Lazy<ProductService>(() => new ProductService(manager,logger,mapper,shaper));
+            _productService=new Lazy<ProductService>(() => new ProductService(manager,logger,mapper, productLinks));
         }
         public IProductService ProductService => _productService.Value;
     }

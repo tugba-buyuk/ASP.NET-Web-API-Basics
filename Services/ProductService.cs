@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Entities.DataTransferObjects;
 using Entities.Exceptions;
+using Entities.LinkModels;
 using Entities.Models;
 using Entities.RequestFeatures;
 using Repositories.Contracts;
@@ -20,36 +21,27 @@ namespace Services
         private readonly IRepositoryManager _manager;
         private readonly ILoggerService _logger;
         private readonly IMapper _mapper;
-        private readonly IDataShaper<ProductDTO> _shaper;
-        private IRepositoryManager manager;
-        private ILoggerService logger;
-        private IMapper mapper;
+        private readonly IProductLinks _productLinks;
 
-        public ProductService(IRepositoryManager manager, ILoggerService logger, IMapper mapper)
-        {
-            this.manager = manager;
-            this.logger = logger;
-            this.mapper = mapper;
-        }
-
-        public ProductService(IRepositoryManager manager, ILoggerService logger, IMapper mapper, IDataShaper<ProductDTO> shaper)
+        public ProductService(IRepositoryManager manager, ILoggerService logger, IMapper mapper, IProductLinks productLinks)
         {
             _manager = manager;
             _logger = logger;
             _mapper = mapper;
-            _shaper = shaper;
+            _productLinks = productLinks;
         }
 
-        public async Task<(IEnumerable<ExpandoObject> productDto, MetaData metaData)> AllProductsAsync(ProductParameters productParameters, bool trackChanges)
+
+        public async Task<(LinkResponse linkResponse, MetaData metaData)> AllProductsAsync(LinkParameters linkParameters, bool trackChanges)
         {
-            if (!productParameters.ValidPriceRange)
+            if (!linkParameters.ProductParameters.ValidPriceRange)
             {
                 throw new PriceOutofRangeBadRequestException();
             }
-            var productsWithMetaData= await _manager.Product.GetAllProductsAsync(productParameters, trackChanges);
+            var productsWithMetaData= await _manager.Product.GetAllProductsAsync(linkParameters.ProductParameters, trackChanges);
             var productDto=  _mapper.Map<IEnumerable<ProductDTO>>(productsWithMetaData);
-            var shapeedData = _shaper.ShapeData(productDto, productParameters.Fields);
-            return (shapeedData, productsWithMetaData.MetaData);
+            var links = _productLinks.TryGenerateLinks(productDto, linkParameters.ProductParameters.Fields, linkParameters.HttpContext);
+            return (links, productsWithMetaData.MetaData);
         }
 
         public async Task<ProductDTO>CreateProductAsync(ProductDTOForInsertion productDto)

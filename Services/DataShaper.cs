@@ -1,4 +1,5 @@
-﻿using Services.Contracts;
+﻿using Entities.Models;
+using Services.Contracts;
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
@@ -17,13 +18,13 @@ namespace Services
             Properties= typeof(T)
                 .GetProperties(BindingFlags.Instance | BindingFlags.Public);   
         }
-        public IEnumerable<ExpandoObject> ShapeData(IEnumerable<T> entities, string fieldString)
+        public IEnumerable<ShapedEntity> ShapeData(IEnumerable<T> entities, string fieldString)
         {
             var requiredProperties= GetRequiredProperties(fieldString);
             return FetchData(entities, requiredProperties);
         }
 
-        public ExpandoObject ShapeData(T entity, string fieldString)
+        public ShapedEntity ShapeData(T entity, string fieldString)
         {
             var requiredProperties = GetRequiredProperties(fieldString);
             return FetchDataForEntity(entity, requiredProperties);
@@ -55,21 +56,23 @@ namespace Services
 
         }
     
-        private ExpandoObject FetchDataForEntity(T entity, IEnumerable<PropertyInfo> requiredProperties)
+        private ShapedEntity FetchDataForEntity(T entity, IEnumerable<PropertyInfo> requiredProperties)
         {
-            var shapedObject = new ExpandoObject();
+            var shapedObject = new ShapedEntity();
 
             foreach(var propert in requiredProperties)
             {
                 var objectPropertyValue = propert.GetValue(entity);
-                shapedObject.TryAdd(propert.Name, objectPropertyValue);
+                shapedObject.Entity.TryAdd(propert.Name, objectPropertyValue);
             }
+            var objectProperty = entity.GetType().GetProperty("Id");
+            shapedObject.Id =  (int)objectProperty.GetValue(entity);
             return shapedObject;
         }
     
-        private IEnumerable<ExpandoObject> FetchData(IEnumerable<T> entities, IEnumerable<PropertyInfo> requiredProperties)
+        private IEnumerable<ShapedEntity> FetchData(IEnumerable<T> entities, IEnumerable<PropertyInfo> requiredProperties)
         {
-            var shapedData= new List<ExpandoObject>();
+            var shapedData= new List<ShapedEntity>();
             foreach(var entity in entities)
             {
                 var shapedObject= FetchDataForEntity(entity, requiredProperties);
