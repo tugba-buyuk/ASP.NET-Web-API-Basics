@@ -7,6 +7,7 @@ using Repositories.Contracts;
 using Services.Contracts;
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,14 +20,27 @@ namespace Services
         private readonly IRepositoryManager _manager;
         private readonly ILoggerService _logger;
         private readonly IMapper _mapper;
+        private readonly IDataShaper<ProductDTO> _shaper;
+        private IRepositoryManager manager;
+        private ILoggerService logger;
+        private IMapper mapper;
+
         public ProductService(IRepositoryManager manager, ILoggerService logger, IMapper mapper)
+        {
+            this.manager = manager;
+            this.logger = logger;
+            this.mapper = mapper;
+        }
+
+        public ProductService(IRepositoryManager manager, ILoggerService logger, IMapper mapper, IDataShaper<ProductDTO> shaper)
         {
             _manager = manager;
             _logger = logger;
             _mapper = mapper;
+            _shaper = shaper;
         }
 
-        public async Task<(IEnumerable<ProductDTO> productDto, MetaData metaData)> AllProductsAsync(ProductParameters productParameters, bool trackChanges)
+        public async Task<(IEnumerable<ExpandoObject> productDto, MetaData metaData)> AllProductsAsync(ProductParameters productParameters, bool trackChanges)
         {
             if (!productParameters.ValidPriceRange)
             {
@@ -34,7 +48,8 @@ namespace Services
             }
             var productsWithMetaData= await _manager.Product.GetAllProductsAsync(productParameters, trackChanges);
             var productDto=  _mapper.Map<IEnumerable<ProductDTO>>(productsWithMetaData);
-            return (productDto, productsWithMetaData.MetaData);
+            var shapeedData = _shaper.ShapeData(productDto, productParameters.Fields);
+            return (shapeedData, productsWithMetaData.MetaData);
         }
 
         public async Task<ProductDTO>CreateProductAsync(ProductDTOForInsertion productDto)

@@ -4,6 +4,7 @@ using Entities.RequestFeatures;
 using Repositories.Contracts;
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,7 +13,7 @@ namespace Services.Contracts
 {
     public interface IProductService
     {
-        Task<(IEnumerable<ProductDTO> productDto,MetaData metaData)> AllProductsAsync(ProductParameters productParameters,bool trackChanges);
+        Task<(IEnumerable<ExpandoObject> productDto,MetaData metaData)> AllProductsAsync(ProductParameters productParameters,bool trackChanges);
         Task<ProductDTO> OneProductwithIDAsync(int id, bool trackChanges);
         Task<ProductDTO> CreateProductAsync(ProductDTOForInsertion productDto);
         Task UpdateProductAsync(int id, ProductDTOForUpdate productDto, bool trackChanges);

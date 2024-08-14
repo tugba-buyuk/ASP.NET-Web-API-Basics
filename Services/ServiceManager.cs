@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Entities.DataTransferObjects;
 using Repositories.Contracts;
 using Repositories.EFCore;
 using Services.Contracts;
@@ -13,9 +14,9 @@ namespace Services
     public class ServiceManager : IServiceManager
     {
         private readonly Lazy<ProductService> _productService;
-        public ServiceManager(IRepositoryManager manager,ILoggerService logger,IMapper mapper)
+        public ServiceManager(IRepositoryManager manager,ILoggerService logger,IMapper mapper,IDataShaper<ProductDTO> shaper)
         {
-            _productService=new Lazy<ProductService>(() => new ProductService(manager,logger,mapper));
+            _productService=new Lazy<ProductService>(() => new ProductService(manager,logger,mapper,shaper));
         }
         public IProductService ProductService => _productService.Value;
     }
