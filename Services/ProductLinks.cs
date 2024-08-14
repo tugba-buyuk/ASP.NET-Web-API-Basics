@@ -43,15 +43,37 @@ namespace Services
                 shapedProduct[index].Add("Links", productLinks);
             }
             var productCollection=new LinkCollectionWrapper<Entity>(shapedProduct);
+            CreateForProducts(httpContext, productCollection);
             return new LinkResponse { HasLink = true, LinkedEntites=productCollection };
+        }
+
+        private LinkCollectionWrapper<Entity> CreateForProducts(HttpContext httpContext, LinkCollectionWrapper<Entity> productCollectionWrapper)
+        {
+            productCollectionWrapper.Links.Add(new Link()
+            {
+                Href = $"/api/{httpContext.GetRouteData().Values["controller"].ToString().ToLower()}",
+                Rel = "self",
+                Method = "GET"
+            });
+            return productCollectionWrapper;
         }
 
         private List<Link> CreateForProduct(ProductDTO productDTO, string fields, HttpContext httpContext)
         {
             var links = new List<Link>()
             {
-                new Link("a1","b1","c1"),
-                new Link("a2","b2","c3"),
+                new Link()
+                {
+                    Href=$"/api/{httpContext.GetRouteData().Values["controller"].ToString().ToLower()}/{productDTO.Id}",
+                    Rel="self",
+                    Method="GET"
+                },
+                new Link()
+                {
+                    Href=$"/api/{httpContext.GetRouteData().Values["controller"].ToString().ToLower()}",
+                    Rel="create",
+                    Method="POST"
+                }
             };
             return links;
         }

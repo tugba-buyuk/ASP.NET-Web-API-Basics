@@ -51,21 +51,20 @@ namespace first_Application.Extensions
         {
             services.Configure<MvcOptions>(config =>
             {
-                var systemJsonOutputFormatter = config.OutputFormatters.OfType<SystemTextJsonOutputFormatter>()?.FirstOrDefault();
-
-                if (systemJsonOutputFormatter is not null)
+                var systemJsonOutputFormatter = config.OutputFormatters.OfType<SystemTextJsonOutputFormatter>().FirstOrDefault();
+                if (systemJsonOutputFormatter != null)
                 {
                     systemJsonOutputFormatter.SupportedMediaTypes.Add("application/vnd.tb.hateoas+json");
                 }
 
-                var xmlOutputFormatter= config.OutputFormatters.OfType<XmlSerializerOutputFormatter>()?.FirstOrDefault();
-                if (xmlOutputFormatter is not null)
+                var xmlOutputFormatter = config.OutputFormatters.OfType<XmlDataContractSerializerOutputFormatter>().FirstOrDefault();
+                if (xmlOutputFormatter != null)
                 {
                     xmlOutputFormatter.SupportedMediaTypes.Add("application/vnd.tb.hateoas+xml");
                 }
-            }
-            );
+            });
         }
+
 
     }
 }

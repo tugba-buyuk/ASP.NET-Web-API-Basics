@@ -15,14 +15,14 @@ LogManager.LoadConfiguration(String.Concat(Directory.GetCurrentDirectory(),"/nlo
 
 builder.Services.AddControllers(config =>
 {
-    config.RespectBrowserAcceptHeader = true; //header'daki accept'e farklý formatlarý kabul edeceðini söyler.
-    config.ReturnHttpNotAcceptable = true; //eðer ilgili yapýlandýrma yoksa 406 döner
+    config.RespectBrowserAcceptHeader = true; // Header'daki Accept'e farklý formatlarý kabul edeceðini söyler.
+    config.ReturnHttpNotAcceptable = true; // Eðer ilgili yapýlandýrma yoksa 406 döner.
 })
-    .AddCustomCsvFormatter()
-    .AddXmlDataContractSerializerFormatters() // xml dönüþü yapmamýzý saðlayan kod
-    .AddApplicationPart(typeof(Presentation.AssemblyReference).Assembly)
-    .AddNewtonsoftJson();
-
+    .AddCustomCsvFormatter() // CSV formatlayýcýyý ekler.
+    .AddXmlDataContractSerializerFormatters() // XML dönüþü yapmamýzý saðlar.
+    .AddApplicationPart(typeof(Presentation.AssemblyReference).Assembly); // Belirtilen assembly'i ekler.
+   /* .AddNewtonsoftJson();*/ // JSON formatlayýcýyý ekler.
+    
 
 
 builder.Services.Configure<ApiBehaviorOptions>(options =>
