@@ -2,6 +2,7 @@
 using Entities.RequestFeatures;
 using Microsoft.EntityFrameworkCore;
 using Repositories.Contracts;
+using Repositories.EFCore.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,7 +27,8 @@ namespace Repositories.EFCore
         {
             var products = await FindAll(trackChanges)
                 .FilterProducts(productParameters.MinPrice,productParameters.MaxPrice)
-                .OrderBy(p=>p.Id)
+                .Search(productParameters.SearchTerm)
+                .Sort(productParameters.OrderBy)
                 .ToListAsync();
 
             return PagedList<Product>
