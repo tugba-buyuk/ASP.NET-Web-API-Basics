@@ -17,6 +17,11 @@ namespace Repositories.EFCore
         {
         }
 
+        public async Task<List<Product>> AllProducts(bool trackChanges)
+        {
+            return await FindAll(trackChanges).OrderBy(p=>p.Id).ToListAsync();
+        }
+
         public void CreateOneProduct(Product product)=>Create(product);
 
 

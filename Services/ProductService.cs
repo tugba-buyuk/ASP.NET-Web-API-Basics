@@ -59,6 +59,11 @@ namespace Services
             await _manager.SaveAsync();
         }
 
+        public async  Task<List<Product>> GetAllProducts(bool trackChanges)
+        {
+            return await _manager.Product.AllProducts(trackChanges);
+        }
+
         public async Task<(ProductDTOForUpdate productDto, Product product)> GetOneProductForPatchAsync(int id, bool trackChanges)
         {
             var product = await GetOneProductByIdAndCheckExsist(id, trackChanges);
