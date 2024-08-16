@@ -55,12 +55,14 @@ namespace first_Application.Extensions
                 if (systemJsonOutputFormatter != null)
                 {
                     systemJsonOutputFormatter.SupportedMediaTypes.Add("application/vnd.tb.hateoas+json");
+                    systemJsonOutputFormatter.SupportedMediaTypes.Add("application/vnd.tb.apiroot+json");
                 }
 
                 var xmlOutputFormatter = config.OutputFormatters.OfType<XmlDataContractSerializerOutputFormatter>().FirstOrDefault();
                 if (xmlOutputFormatter != null)
                 {
                     xmlOutputFormatter.SupportedMediaTypes.Add("application/vnd.tb.hateoas+xml");
+                    xmlOutputFormatter.SupportedMediaTypes.Add("application/vnd.tb.apiroot+xml");
                 }
             });
         }

@@ -27,7 +27,8 @@ namespace Presentation.Controllers
             _manager = manager;
         }
 
-        [HttpGet]
+        [HttpHead]
+        [HttpGet(Name ="GetAllProductAsync")]
         [ServiceFilter(typeof(ValidateMediaTypeAttribute))]
         public async Task<IActionResult> GetAllProductsAsync([FromQuery] ProductParameters productParameters)
         {
@@ -54,7 +55,7 @@ namespace Presentation.Controllers
         }
 
         [ServiceFilter(typeof(ValidationFilterAttribute))]
-        [HttpPost]
+        [HttpPost(Name = "CreateOneProductAsync")]
         public async Task<IActionResult> CreateOneProductAsync([FromBody] ProductDTOForInsertion productDto)
         {
 
@@ -102,5 +103,13 @@ namespace Presentation.Controllers
             return NoContent();
 
         }
+        
+        [HttpOptions]
+        public IActionResult GetProductsOptions()
+        {
+            Response.Headers.Add("Allow", "GET,POST,PUT,DELETE,HEAD,OPTIONS");
+            return Ok();
+        }
+        
     }
 }
