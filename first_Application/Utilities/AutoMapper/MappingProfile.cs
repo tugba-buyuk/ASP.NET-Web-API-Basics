@@ -11,6 +11,7 @@ namespace first_Application.Utilities.AutoMapper
             CreateMap<ProductDTOForUpdate, Product>().ReverseMap();
             CreateMap<Product, ProductDTO>();
             CreateMap<ProductDTOForInsertion, Product>();
+            CreateMap<UserDTOForRegistration, User>();
 
         }
 
