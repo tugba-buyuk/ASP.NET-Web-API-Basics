@@ -1,4 +1,6 @@
-﻿using Entities.DataTransferObjects;
+﻿using AspNetCoreRateLimit;
+using Entities.DataTransferObjects;
+using Marvin.Cache.Headers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.AspNetCore.Mvc.Versioning;
@@ -82,5 +84,44 @@ namespace first_Application.Extensions
             });
         }
 
+        public static void ConfigureResponseCache(this IServiceCollection services) =>
+            services.AddResponseCaching();
+
+        public static void ConfigureHttpCacheHeader(this IServiceCollection services)
+        {
+            services.AddHttpCacheHeaders(expirationOpt =>
+            {
+                expirationOpt.CacheLocation = CacheLocation.Public;
+                expirationOpt.MaxAge = 90;
+            },
+            validationOpt =>
+            {
+                validationOpt.MustRevalidate = true;
+            });
+        }
+
+        public static void ConfigureRateLimitOptions(this IServiceCollection services)
+        {
+            var rateLimitRules = new List<RateLimitRule>()
+            {
+                new RateLimitRule()
+                {
+                    Endpoint="*",
+                    Limit=3,
+                    Period="1m"
+                }
+            };
+
+            services.Configure<IpRateLimitOptions>(options =>
+            {
+                options.GeneralRules = rateLimitRules;
+            });
+
+            services.AddSingleton<IRateLimitCounterStore, MemoryCacheRateLimitCounterStore>();
+            services.AddSingleton<IIpPolicyStore, MemoryCacheIpPolicyStore>();
+            services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
+            services.AddSingleton<IProcessingStrategy, AsyncKeyLockProcessingStrategy>();
+        }
     }
 }
+

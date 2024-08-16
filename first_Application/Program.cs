@@ -1,3 +1,4 @@
+using AspNetCoreRateLimit;
 using first_Application.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -16,7 +17,8 @@ LogManager.LoadConfiguration(String.Concat(Directory.GetCurrentDirectory(),"/nlo
 builder.Services.AddControllers(config =>
 {
     config.RespectBrowserAcceptHeader = true; // Header'daki Accept'e farklý formatlarý kabul edeceðini söyler.
-    config.ReturnHttpNotAcceptable = true; // Eðer ilgili yapýlandýrma yoksa 406 döner.
+    config.ReturnHttpNotAcceptable = true;
+config.CacheProfiles.Add("5mins", new CacheProfile() {Duration=300});// Eðer ilgili yapýlandýrma yoksa 406 döner.
 })
     .AddCustomCsvFormatter() // CSV formatlayýcýyý ekler.
     .AddXmlDataContractSerializerFormatters() // XML dönüþü yapmamýzý saðlar.
@@ -43,6 +45,11 @@ builder.Services.ConfigureDataShaper();
 builder.Services.AddCustomMediaTypes();
 builder.Services.AddScoped<IProductLinks, ProductLinks>();
 builder.Services.ConfigureVersioning();
+builder.Services.ConfigureResponseCache();
+builder.Services.ConfigureHttpCacheHeader();
+builder.Services.AddMemoryCache();
+builder.Services.ConfigureRateLimitOptions();
+builder.Services.AddHttpContextAccessor();
 var app = builder.Build();
 
 var logger= app.Services.GetRequiredService<ILoggerService>();
@@ -60,7 +67,10 @@ if (app.Environment.IsProduction())
 
 app.UseHttpsRedirection();
 
+app.UseIpRateLimiting();
 app.UseCors("CorsPolicy");
+app.UseResponseCaching();
+app.UseHttpCacheHeaders();
 
 app.UseAuthorization();
 

@@ -2,6 +2,7 @@
 using Entities.Exceptions;
 using Entities.Models;
 using Entities.RequestFeatures;
+using Marvin.Cache.Headers;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.ActionFilters;
@@ -19,6 +20,8 @@ namespace Presentation.Controllers
     [ServiceFilter(typeof(LogFilterAttribute))]
     [Route("api/products")]
     [ApiController]
+    //[ResponseCache(CacheProfileName ="5mins")]
+    //[HttpCacheExpiration(CacheLocation =CacheLocation.Public, MaxAge =75)]
     public class ProductsController : ControllerBase
     {
         private readonly IServiceManager _manager;
