@@ -3,6 +3,7 @@ using Entities.Exceptions;
 using Entities.Models;
 using Entities.RequestFeatures;
 using Marvin.Cache.Headers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.ActionFilters;
@@ -31,9 +32,11 @@ namespace Presentation.Controllers
             _manager = manager;
         }
 
+        [Authorize(Roles ="User,Admin")]
         [HttpHead]
         [HttpGet(Name ="GetAllProductAsync")]
         [ServiceFilter(typeof(ValidateMediaTypeAttribute))]
+
         public async Task<IActionResult> GetAllProductsAsync([FromQuery] ProductParameters productParameters)
         {
             var linkParameters = new LinkParameters()
@@ -50,6 +53,7 @@ namespace Presentation.Controllers
         }
 
         [HttpGet("{id:int}")]
+        [Authorize(Roles = "User,Admin")]
         public async Task<IActionResult> GetOneProductAsync([FromRoute(Name = "id")] int id)
         {
 
@@ -60,6 +64,7 @@ namespace Presentation.Controllers
 
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         [HttpPost(Name = "CreateOneProductAsync")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> CreateOneProductAsync([FromBody] ProductDTOForInsertion productDto)
         {
 
@@ -68,7 +73,7 @@ namespace Presentation.Controllers
 
         }
 
-
+        [Authorize(Roles = "Admin")]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         [HttpPut("{id:int}")]
         public async Task<IActionResult> UpdateOneProductAsync([FromRoute(Name = "id")] int id, [FromBody] ProductDTOForUpdate productDto)
@@ -78,6 +83,7 @@ namespace Presentation.Controllers
         }
 
         [HttpDelete("{id:int}")]
+        [Authorize(Roles ="Admin")]
         public async Task<IActionResult> DeleteOneProductAsync([FromRoute(Name = "id")] int id)
         {
 
@@ -87,6 +93,7 @@ namespace Presentation.Controllers
         }
 
         [HttpPatch("{id:int}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> PartiallyUpdateOneProductAsync([FromRoute(Name = "id")] int id, [FromBody] JsonPatchDocument<ProductDTOForUpdate> pathProduct)
         {
            if(pathProduct is null)

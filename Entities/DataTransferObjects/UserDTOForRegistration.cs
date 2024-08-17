@@ -18,10 +18,8 @@ namespace Entities.DataTransferObjects
         [Required(ErrorMessage ="Password is required")]
         public String? Password {  get; init; }
 
-        [Required(ErrorMessage = "Email is required")]
         public String? Email { get; init; }
 
-        [Required(ErrorMessage = "PhoneNumber is required")]
         public String? PhoneNumber { get; init; }
         public ICollection<string>? Roles { get; init; }
     }

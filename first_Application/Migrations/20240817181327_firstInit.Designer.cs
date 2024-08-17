@@ -12,8 +12,8 @@ using Repositories.EFCore;
 namespace first_Application.Migrations
 {
     [DbContext(typeof(RepositoryContext))]
-    [Migration("20240816153642_CreatingIdentityUsers")]
-    partial class CreatingIdentityUsers
+    [Migration("20240817181327_firstInit")]
+    partial class firstInit
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -119,6 +119,12 @@ namespace first_Application.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
 
+                    b.Property<string>("RefreshToken")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("RefreshTokenExpireTime")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
@@ -167,6 +173,26 @@ namespace first_Application.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "769cb84a-7e74-45b3-beb5-ddf2a907eb5d",
+                            Name = "User",
+                            NormalizedName = "USER"
+                        },
+                        new
+                        {
+                            Id = "9589120d-f17d-4222-8e5e-67c756d8c07d",
+                            Name = "Admin",
+                            NormalizedName = "ADMIN"
+                        },
+                        new
+                        {
+                            Id = "021893d0-4d50-4016-889e-b89544afdad8",
+                            Name = "Editor",
+                            NormalizedName = "EDITOR"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

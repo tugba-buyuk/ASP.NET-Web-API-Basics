@@ -116,6 +116,12 @@ namespace first_Application.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
 
+                    b.Property<string>("RefreshToken")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("RefreshTokenExpireTime")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
@@ -168,15 +174,21 @@ namespace first_Application.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "f1abcd75-bed2-4a22-9dd1-f1f1853096bc",
+                            Id = "769cb84a-7e74-45b3-beb5-ddf2a907eb5d",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = "a1f7a5bd-61f0-4208-adf5-fe51e6d2368c",
+                            Id = "9589120d-f17d-4222-8e5e-67c756d8c07d",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
+                        },
+                        new
+                        {
+                            Id = "021893d0-4d50-4016-889e-b89544afdad8",
+                            Name = "Editor",
+                            NormalizedName = "EDITOR"
                         });
                 });
 
