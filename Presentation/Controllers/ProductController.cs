@@ -21,6 +21,8 @@ namespace Presentation.Controllers
     [ServiceFilter(typeof(LogFilterAttribute))]
     [Route("api/products")]
     [ApiController]
+    [ApiExplorerSettings(GroupName = "v1")]
+
     //[ResponseCache(CacheProfileName ="5mins")]
     //[HttpCacheExpiration(CacheLocation =CacheLocation.Public, MaxAge =75)]
     public class ProductsController : ControllerBase

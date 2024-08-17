@@ -552,3 +552,11 @@
 2024-08-17 21:20:16.1408 Info NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.2.2526. Product version: 5.3.2+8d52d4f3fcdbd84beae3442e1fdc8125598ed81f. GlobalAssemblyCache: False
 2024-08-17 21:20:16.1408 Info Validating config: TargetNames=logfile, ConfigItems=12, FilePath=C:\API\basics\first_Application\nlog.config
 2024-08-17 21:20:16.1526 Info Configuration initialized.
+2024-08-17 23:17:08.5087 Info Registered target NLog.Targets.FileTarget(Name=logfile)
+2024-08-17 23:17:08.5193 Info NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.2.2526. Product version: 5.3.2+8d52d4f3fcdbd84beae3442e1fdc8125598ed81f. GlobalAssemblyCache: False
+2024-08-17 23:17:08.5193 Info Validating config: TargetNames=logfile, ConfigItems=12, FilePath=C:\API\basics\first_Application\nlog.config
+2024-08-17 23:17:08.5193 Info Configuration initialized.
+2024-08-17 23:26:14.0582 Info Registered target NLog.Targets.FileTarget(Name=logfile)
+2024-08-17 23:26:14.0671 Info NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.2.2526. Product version: 5.3.2+8d52d4f3fcdbd84beae3442e1fdc8125598ed81f. GlobalAssemblyCache: False
+2024-08-17 23:26:14.0729 Info Validating config: TargetNames=logfile, ConfigItems=12, FilePath=C:\API\basics\first_Application\nlog.config
+2024-08-17 23:26:14.0729 Info Configuration initialized.
