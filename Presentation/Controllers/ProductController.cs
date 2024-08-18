@@ -22,6 +22,8 @@ namespace Presentation.Controllers
     [Route("api/products")]
     [ApiController]
     [ApiExplorerSettings(GroupName = "v1")]
+    [Authorize(Roles ="Admin")]
+
 
     //[ResponseCache(CacheProfileName ="5mins")]
     //[HttpCacheExpiration(CacheLocation =CacheLocation.Public, MaxAge =75)]
@@ -34,7 +36,6 @@ namespace Presentation.Controllers
             _manager = manager;
         }
 
-        [Authorize(Roles ="User,Admin")]
         [HttpHead]
         [HttpGet(Name ="GetAllProductAsync")]
         [ServiceFilter(typeof(ValidateMediaTypeAttribute))]

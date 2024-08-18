@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Entities.DataTransferObjects;
 using Entities.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Repositories.Contracts;
@@ -18,10 +19,10 @@ namespace Services
     {
         private readonly Lazy<ProductService> _productService;
         private readonly Lazy<AuthenticationManager> _authenticationManager;
-        public ServiceManager(IRepositoryManager manager,ILoggerService logger,IMapper mapper, IProductLinks productLinks, UserManager<User> userManager, IConfiguration configuration)
+        public ServiceManager(IRepositoryManager manager,ILoggerService logger,IMapper mapper, IProductLinks productLinks, UserManager<User> userManager, IConfiguration configuration,IHttpContextAccessor httpContextAccessor, SignInManager<User> signInManager)
         {
             _productService=new Lazy<ProductService>(() => new ProductService(manager,logger,mapper, productLinks));
-            _authenticationManager=new Lazy<AuthenticationManager>(() =>  new AuthenticationManager(mapper,configuration,userManager,logger));
+            _authenticationManager=new Lazy<AuthenticationManager>(() =>  new AuthenticationManager(mapper,configuration,userManager,logger,httpContextAccessor,signInManager));
         }
         public IProductService ProductService => _productService.Value;
 

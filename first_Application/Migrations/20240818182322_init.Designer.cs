@@ -12,8 +12,8 @@ using Repositories.EFCore;
 namespace first_Application.Migrations
 {
     [DbContext(typeof(RepositoryContext))]
-    [Migration("20240817181327_firstInit")]
-    partial class firstInit
+    [Migration("20240818182322_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -122,7 +122,7 @@ namespace first_Application.Migrations
                     b.Property<string>("RefreshToken")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("RefreshTokenExpireTime")
+                    b.Property<DateTime?>("RefreshTokenExpireTime")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("SecurityStamp")
@@ -177,19 +177,19 @@ namespace first_Application.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "769cb84a-7e74-45b3-beb5-ddf2a907eb5d",
+                            Id = "90f54c42-d6a9-495a-84dc-95f46e8f3fb3",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = "9589120d-f17d-4222-8e5e-67c756d8c07d",
+                            Id = "6ae6d1bd-4800-498e-8f47-f1c8f76a4030",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "021893d0-4d50-4016-889e-b89544afdad8",
+                            Id = "9064183b-4955-4553-ac97-8a4e68b7884f",
                             Name = "Editor",
                             NormalizedName = "EDITOR"
                         });

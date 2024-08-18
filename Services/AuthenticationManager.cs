@@ -10,6 +10,7 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using Entities.Exceptions;
+using Microsoft.AspNetCore.Http;
 
 
 namespace Services
@@ -21,13 +22,16 @@ namespace Services
         private readonly UserManager<User> _userManager;
         private readonly ILoggerService _logger;
         private User? _user;
-
-        public AuthenticationManager(IMapper mapper, IConfiguration configuration, UserManager<User> userManager, ILoggerService logger)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly SignInManager<User> _signinManager;
+        public AuthenticationManager(IMapper mapper, IConfiguration configuration, UserManager<User> userManager, ILoggerService logger, IHttpContextAccessor httptAccessor, SignInManager<User> signInManager)
         {
             _mapper = mapper;
             _configuration = configuration;
             _userManager = userManager;
             _logger = logger;
+            _httpContextAccessor = httptAccessor;
+            _signinManager = signInManager;
         }
 
         public async Task<TokenDTO> CreateToken(bool populateExp)
@@ -154,6 +158,23 @@ namespace Services
             }
             _user = user;
             return await CreateToken(populateExp: false);
+        }
+
+        public async Task<bool> Logout()
+        {
+            var userPrincipal = _httpContextAccessor.HttpContext.User;
+            var user = await _userManager.FindByNameAsync(userPrincipal.Identity.Name);
+            var signOutResult = _signinManager.SignOutAsync();
+
+            await signOutResult;
+            if (user != null)
+            {
+                user.RefreshToken = null;
+                user.RefreshTokenExpireTime = null;
+                await _userManager.UpdateAsync(user);
+            }
+
+            return signOutResult.IsCompletedSuccessfully;
         }
     }
 }

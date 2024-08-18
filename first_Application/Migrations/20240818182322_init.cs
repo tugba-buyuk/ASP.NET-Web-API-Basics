@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace first_Application.Migrations
 {
     /// <inheritdoc />
-    public partial class firstInit : Migration
+    public partial class init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -35,7 +35,7 @@ namespace first_Application.Migrations
                     FirstName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     LastName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     RefreshToken = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    RefreshTokenExpireTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    RefreshTokenExpireTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -181,9 +181,9 @@ namespace first_Application.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "021893d0-4d50-4016-889e-b89544afdad8", null, "Editor", "EDITOR" },
-                    { "769cb84a-7e74-45b3-beb5-ddf2a907eb5d", null, "User", "USER" },
-                    { "9589120d-f17d-4222-8e5e-67c756d8c07d", null, "Admin", "ADMIN" }
+                    { "6ae6d1bd-4800-498e-8f47-f1c8f76a4030", null, "Admin", "ADMIN" },
+                    { "9064183b-4955-4553-ac97-8a4e68b7884f", null, "Editor", "EDITOR" },
+                    { "90f54c42-d6a9-495a-84dc-95f46e8f3fb3", null, "User", "USER" }
                 });
 
             migrationBuilder.InsertData(
