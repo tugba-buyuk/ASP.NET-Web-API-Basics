@@ -19,7 +19,17 @@ namespace Repositories.EFCore
 
         public async Task<List<Product>> AllProducts(bool trackChanges)
         {
-            return await FindAll(trackChanges).OrderBy(p=>p.Id).ToListAsync();
+            return await FindAll(trackChanges)
+                .OrderBy(p=>p.Id)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Product>> AllProductsWithCategoriesAsync(bool trackChanges)
+        {
+            return await FindAll(trackChanges)
+                .Include(p=>p.Category)
+                .OrderBy(p=>p.Id)
+                .ToArrayAsync();
         }
 
         public void CreateOneProduct(Product product)=>Create(product);

@@ -44,8 +44,18 @@ namespace Services
             return (links, productsWithMetaData.MetaData);
         }
 
+        public async Task<IEnumerable<Product>> AllProductsWithCategories(bool trackChanges)
+        {
+            return await _manager.Product.AllProductsWithCategoriesAsync(trackChanges);
+        }
+
         public async Task<ProductDTO>CreateProductAsync(ProductDTOForInsertion productDto)
         {
+            var category=await _manager.Category.GetOneCategoryAsync(productDto.CategoryId,false);
+            if(category is null)
+            {
+                throw new CategoryNotFoundException(productDto.CategoryId);
+            }
             var entity = _mapper.Map<Product>(productDto);
             _manager.Product.CreateOneProduct(entity);
             await _manager.SaveAsync();

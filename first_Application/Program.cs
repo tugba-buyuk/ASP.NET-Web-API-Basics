@@ -22,9 +22,10 @@ config.CacheProfiles.Add("5mins", new CacheProfile() {Duration=300});// Eðer ilg
 })
     .AddCustomCsvFormatter() // CSV formatlayýcýyý ekler.
     .AddXmlDataContractSerializerFormatters() // XML dönüþü yapmamýzý saðlar.
-    .AddApplicationPart(typeof(Presentation.AssemblyReference).Assembly); // Belirtilen assembly'i ekler.
-   /* .AddNewtonsoftJson();*/ // JSON formatlayýcýyý ekler.
-    
+    .AddApplicationPart(typeof(Presentation.AssemblyReference).Assembly) // Belirtilen assembly'i ekler.
+    .AddNewtonsoftJson(opt=>
+    opt.SerializerSettings.ReferenceLoopHandling=Newtonsoft.Json.ReferenceLoopHandling.Ignore); // JSON formatlayýcýyý ekler.
+
 
 
 builder.Services.Configure<ApiBehaviorOptions>(options =>
