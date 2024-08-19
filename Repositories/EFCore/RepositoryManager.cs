@@ -11,14 +11,17 @@ namespace Repositories.EFCore
     {
         private readonly RepositoryContext _context;
         private readonly Lazy<IProductRepository> _productRepository;
+        private readonly Lazy<ICategoryRepository> _categoryRepository;
 
         public RepositoryManager(RepositoryContext context)
         {
             _context = context;
             _productRepository=new Lazy<IProductRepository>(()=> new ProductRepository(context));
+            _categoryRepository=new Lazy<ICategoryRepository>(()=> new CategoryRepository(context));
         }
 
         public IProductRepository Product =>_productRepository.Value;
+        public ICategoryRepository Category =>_categoryRepository.Value;
 
         public async Task SaveAsync()
         {

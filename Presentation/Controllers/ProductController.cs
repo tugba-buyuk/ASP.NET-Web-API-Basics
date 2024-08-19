@@ -39,7 +39,6 @@ namespace Presentation.Controllers
         [HttpHead]
         [HttpGet(Name ="GetAllProductAsync")]
         [ServiceFilter(typeof(ValidateMediaTypeAttribute))]
-
         public async Task<IActionResult> GetAllProductsAsync([FromQuery] ProductParameters productParameters)
         {
             var linkParameters = new LinkParameters()
@@ -53,6 +52,12 @@ namespace Presentation.Controllers
             return result.linkResponse.HasLink ?
                 Ok(result.linkResponse.LinkedEntites) :
                 Ok(result.linkResponse.ShapedEntities);
+        }
+
+        [HttpGet("details")]
+        public async Task<IActionResult> GetAllProductsWithCategories()
+        {
+            return Ok( await _manager.ProductService.AllProductsWithCategories(false));
         }
 
         [HttpGet("{id:int}")]

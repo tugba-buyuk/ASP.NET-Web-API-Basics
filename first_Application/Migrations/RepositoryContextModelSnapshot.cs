@@ -22,6 +22,40 @@ namespace first_Application.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("Entities.Models.Category", b =>
+                {
+                    b.Property<int>("CategoryId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CategoryId"));
+
+                    b.Property<string>("CategoryName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("CategoryId");
+
+                    b.ToTable("Categories");
+
+                    b.HasData(
+                        new
+                        {
+                            CategoryId = 1,
+                            CategoryName = "Computer"
+                        },
+                        new
+                        {
+                            CategoryId = 2,
+                            CategoryName = "Mobile Phone"
+                        },
+                        new
+                        {
+                            CategoryId = 3,
+                            CategoryName = "Elektronic Device"
+                        });
+                });
+
             modelBuilder.Entity("Entities.Models.Product", b =>
                 {
                     b.Property<int>("Id")
@@ -29,6 +63,9 @@ namespace first_Application.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
 
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
@@ -39,30 +76,36 @@ namespace first_Application.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CategoryId");
+
                     b.ToTable("Products");
 
                     b.HasData(
                         new
                         {
                             Id = 1,
+                            CategoryId = 3,
                             Price = 5000m,
                             ProductName = "Computer"
                         },
                         new
                         {
                             Id = 2,
+                            CategoryId = 3,
                             Price = 300m,
                             ProductName = "Keyboard"
                         },
                         new
                         {
                             Id = 3,
+                            CategoryId = 3,
                             Price = 200m,
                             ProductName = "Mouse"
                         },
                         new
                         {
                             Id = 4,
+                            CategoryId = 3,
                             Price = 4000m,
                             ProductName = "Desk"
                         });
@@ -174,19 +217,19 @@ namespace first_Application.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "90f54c42-d6a9-495a-84dc-95f46e8f3fb3",
+                            Id = "96c4ebbb-5526-45aa-8e91-ec59ab6ad053",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = "6ae6d1bd-4800-498e-8f47-f1c8f76a4030",
+                            Id = "c9b2fd7c-6915-411f-b7f2-a8009e4bfe02",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "9064183b-4955-4553-ac97-8a4e68b7884f",
+                            Id = "bc73de10-b832-44f1-bab4-266d42f9fbbb",
                             Name = "Editor",
                             NormalizedName = "EDITOR"
                         });
@@ -298,6 +341,17 @@ namespace first_Application.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("Entities.Models.Product", b =>
+                {
+                    b.HasOne("Entities.Models.Category", "Category")
+                        .WithMany("Products")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -347,6 +401,11 @@ namespace first_Application.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Entities.Models.Category", b =>
+                {
+                    b.Navigation("Products");
                 });
 #pragma warning restore 612, 618
         }

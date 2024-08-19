@@ -57,17 +57,16 @@ namespace first_Application.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Products",
+                name: "Categories",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
+                    CategoryId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    ProductName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
+                    CategoryName = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Products", x => x.Id);
+                    table.PrimaryKey("PK_Categories", x => x.CategoryId);
                 });
 
             migrationBuilder.CreateTable(
@@ -176,25 +175,56 @@ namespace first_Application.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Products",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ProductName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    CategoryId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Products", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Products_Categories_CategoryId",
+                        column: x => x.CategoryId,
+                        principalTable: "Categories",
+                        principalColumn: "CategoryId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.InsertData(
                 table: "AspNetRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "6ae6d1bd-4800-498e-8f47-f1c8f76a4030", null, "Admin", "ADMIN" },
-                    { "9064183b-4955-4553-ac97-8a4e68b7884f", null, "Editor", "EDITOR" },
-                    { "90f54c42-d6a9-495a-84dc-95f46e8f3fb3", null, "User", "USER" }
+                    { "96c4ebbb-5526-45aa-8e91-ec59ab6ad053", null, "User", "USER" },
+                    { "bc73de10-b832-44f1-bab4-266d42f9fbbb", null, "Editor", "EDITOR" },
+                    { "c9b2fd7c-6915-411f-b7f2-a8009e4bfe02", null, "Admin", "ADMIN" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Categories",
+                columns: new[] { "CategoryId", "CategoryName" },
+                values: new object[,]
+                {
+                    { 1, "Computer" },
+                    { 2, "Mobile Phone" },
+                    { 3, "Elektronic Device" }
                 });
 
             migrationBuilder.InsertData(
                 table: "Products",
-                columns: new[] { "Id", "Price", "ProductName" },
+                columns: new[] { "Id", "CategoryId", "Price", "ProductName" },
                 values: new object[,]
                 {
-                    { 1, 5000m, "Computer" },
-                    { 2, 300m, "Keyboard" },
-                    { 3, 200m, "Mouse" },
-                    { 4, 4000m, "Desk" }
+                    { 1, 3, 5000m, "Computer" },
+                    { 2, 3, 300m, "Keyboard" },
+                    { 3, 3, 200m, "Mouse" },
+                    { 4, 3, 4000m, "Desk" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -235,6 +265,11 @@ namespace first_Application.Migrations
                 column: "NormalizedUserName",
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Products_CategoryId",
+                table: "Products",
+                column: "CategoryId");
         }
 
         /// <inheritdoc />
@@ -263,6 +298,9 @@ namespace first_Application.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "Categories");
         }
     }
 }

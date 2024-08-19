@@ -10,5 +10,6 @@ namespace Repositories.Contracts
     {
         Task SaveAsync();
         IProductRepository Product {  get; }
+        ICategoryRepository Category { get; }
     }
 }
